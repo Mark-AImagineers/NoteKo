@@ -67,7 +67,7 @@ The big picture: to create a digital companion that grows with me — something 
 
 ## ✅ Things To Do
 
-- 
+- setup react frontend, login feature
 
 ---
 
@@ -81,5 +81,11 @@ The big picture: to create a digital companion that grows with me — something 
 
 > A raw log of decisions, ideas, frustrations, and wins. Helps me track progress and thought processes.
 
-- `[YYYY-MM-DD]` *Started sketching out how note objects should look. Might separate longform notes vs. flash-style notes.*
+- `[YYYY-MM-DD]`
+    - I will start with the login feature, the idea is not a SaaS app but the user is able to create users. I will do this as well so i learn how to build a secure app.
+
+
+
+
 > This isn’t just an app — it’s my lab. My sandbox. My system. Built to grow with me.
+
