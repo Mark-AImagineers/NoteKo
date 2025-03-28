@@ -3,14 +3,15 @@ Application configuration settings.
 """
 from typing import Optional
 from pydantic_settings import BaseSettings, SettingsConfigDict
+from .metadata import metadata
 
 class Settings(BaseSettings):
     """
     Application settings.
     """
     # Application
-    PROJECT_NAME: str = "NoteKo"
-    VERSION: str = "0.1.0"
+    PROJECT_NAME: str = metadata.name
+    VERSION: str = metadata.version
     ENVIRONMENT: str = "development"
     
     # Authentication

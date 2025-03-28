@@ -1,0 +1,54 @@
+{
+    "name": "NoteKo",
+    "version": "0.1.0",
+    "description": "A modern note-taking application with powerful features",
+    "author": {
+        "name": "MARK BELTRAN",
+        "email": "markb@aimagineers.io"
+    },
+    "license": "MIT",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/yourusername/noteko"
+    },
+    "api": {
+        "version": "0.1.0",
+        "baseUrl": "/v1",
+        "supportedVersions": ["0.1.0"]
+    },
+    "environment": {
+        "runtime": "Python 3.11+",
+        "framework": {
+            "name": "FastAPI",
+            "version": "0.109.2"
+        },
+        "database": {
+            "type": "PostgreSQL",
+            "version": "15",
+            "connection_string": "${DATABASE_URL}"
+        }
+    },
+    "middleware": {
+        "cors": {
+            "enabled": true,
+            "description": "Cross-Origin Resource Sharing"
+        },
+        "rate_limit": {
+            "enabled": true,
+            "description": "API Rate Limiting",
+            "max_requests": 60,
+            "window_seconds": 60
+        },
+        "authentication": {
+            "enabled": true,
+            "type": "JWT",
+            "description": "JSON Web Token Authentication"
+        }
+    },
+    "documentation": {
+        "openapi": "/docs",
+        "redoc": "/redoc"
+    },
+    "created": "2024",
+    "updated": "2024-03-28"
+}
