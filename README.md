@@ -42,10 +42,21 @@ The big picture: to create a digital companion that grows with me — something 
 
 ## 📌 Changelog
 
-### [0.1.0] - YYYY-MM-DD
+### Version 0.1.0 (2025-03-28)
 #### Added
-- Initialized project repo
-- Created initial README with goals and vision
+- Frontend:
+    - Set up React with Vite and Docker
+    - Implemented basic login page UI using Chakra UI
+    - Added routing with react-router-dom
+- Backend:
+    - Set up FastAPI with PostgreSQL and Docker
+    - Configured SQLAlchemy ORM with async support
+    - Created user model and database migrations
+    - Set up pgAdmin for database management
+- Infrastructure:
+    - Docker Compose setup for both frontend and backend
+    - Configured development environment with hot-reload
+    - Set up proper CORS for frontend-backend communication
 
 ### [0.2.0] - YYYY-MM-DD
 #### Planned
@@ -73,19 +84,19 @@ The big picture: to create a digital companion that grows with me — something 
 
 ## ⚙️ Work In Progress (WIP)
 
-- 
-
+- auth endpoints
+- jwt setup
+- security utils
 ---
 
 ## 🧠 Developer's Journal
 
 > A raw log of decisions, ideas, frustrations, and wins. Helps me track progress and thought processes.
 
-- `[YYYY-MM-DD]`
+- `[2025-03-28]`
     - I will start with the login feature, the idea is not a SaaS app but the user is able to create users. I will do this as well so i learn how to build a secure app.
-
-
-
+    - react framework setup done, built a front end only login page
+    - fastapi framework setup done, built a placeholder api
+    - these are all running in docker
 
 > This isn’t just an app — it’s my lab. My sandbox. My system. Built to grow with me.
-
