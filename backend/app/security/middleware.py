@@ -9,10 +9,10 @@ from starlette.requests import Request
 from starlette.responses import Response
 import time
 from typing import Optional, Dict
-from .token import verify_token
+from app.auth.jwt import jwt_auth
 
 # OAuth2 scheme for token authentication
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/v1/auth/login")
 
 class RateLimitMiddleware(BaseHTTPMiddleware):
     """
@@ -64,7 +64,7 @@ async def get_current_user(token: str = Depends(oauth2_scheme)) -> Optional[Dict
         headers={"WWW-Authenticate": "Bearer"},
     )
     
-    payload = verify_token(token)
+    payload = jwt_auth.verify_token(token)
     if payload is None:
         raise credentials_exception
         

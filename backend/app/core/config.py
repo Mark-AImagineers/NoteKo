@@ -1,36 +1,37 @@
 """
 Application configuration settings.
 """
-from typing import Optional
-from pydantic_settings import BaseSettings, SettingsConfigDict
-from .metadata import metadata
+from typing import List
+from pydantic_settings import BaseSettings
+from app.core.metadata import metadata
 
 class Settings(BaseSettings):
-    """
-    Application settings.
-    """
-    # Application
+    """Application settings."""
+    
+    # Project Info
     PROJECT_NAME: str = metadata.name
     VERSION: str = metadata.version
+    API_VERSION: str = metadata.api_version
     ENVIRONMENT: str = "development"
     
-    # Authentication
+    # Security
     SECRET_KEY: str = "your-secret-key-here"  # Change in production
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
-    
-    # Database
-    DATABASE_URL: Optional[str] = None
-    TEST_DATABASE_URL: str = "sqlite+aiosqlite:///:memory:"
+    REFRESH_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 7  # 7 days
     
     # CORS
-    ALLOWED_ORIGINS: list[str] = ["*"]
+    ALLOWED_ORIGINS: List[str] = [
+        "http://localhost:3000",  # React frontend
+        "http://localhost:8000",  # FastAPI backend
+    ]
     
-    model_config = SettingsConfigDict(
-        env_file=".env",
-        env_file_encoding="utf-8",
-        case_sensitive=True
-    )
+    # Database
+    DATABASE_URL: str = "postgresql+asyncpg://postgres:postgres@db:5432/noteko"
+    
+    class Config:
+        env_file = ".env"
+        case_sensitive = True
 
-# Global settings instance
+# Create global settings instance
 settings = Settings()

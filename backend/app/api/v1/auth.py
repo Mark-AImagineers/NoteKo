@@ -15,9 +15,10 @@ from app.security import (
     get_password_hash,
     validate_password,
     get_current_user,
-    verify_token
+    verify_password
 )
 from app.auth.jwt import jwt_auth
+from app.security.middleware import oauth2_scheme
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
@@ -49,16 +50,16 @@ async def register(
     
     # Create new user
     hashed_password = get_password_hash(user_data.password)
-    db_user = User(
+    new_user = User(
         email=user_data.email,
         hashed_password=hashed_password
     )
     
-    db.add(db_user)
+    db.add(new_user)
     await db.commit()
-    await db.refresh(db_user)
+    await db.refresh(new_user)
     
-    return db_user
+    return new_user
 
 @router.post("/login", response_model=Token)
 async def login(
@@ -68,48 +69,53 @@ async def login(
     """
     Authenticate user and return tokens.
     """
-    user = await jwt_auth.authenticate_user(
-        user_data.email,
-        user_data.password,
-        db
+    # Find user by email
+    query = await db.execute(
+        User.__table__.select().where(User.email == user_data.email)
     )
+    user = query.first()
     
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Incorrect email or password",
-            headers={"WWW-Authenticate": "Bearer"},
+            detail="Invalid email or password"
         )
     
-    access_token, refresh_token = await jwt_auth.create_tokens(user.id)
+    # Verify password
+    if not verify_password(user_data.password, user.hashed_password):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid email or password"
+        )
     
-    return Token(
-        access_token=access_token,
-        refresh_token=refresh_token
-    )
+    # Generate tokens
+    access_token = jwt_auth.create_access_token(data={"sub": user.email})
+    refresh_token = jwt_auth.create_refresh_token(data={"sub": user.email})
+    
+    return {
+        "access_token": access_token,
+        "refresh_token": refresh_token,
+        "token_type": "bearer"
+    }
 
 @router.post("/refresh", response_model=Token)
 async def refresh_token(
-    token: str = Depends(get_current_user)
+    token: str = Depends(oauth2_scheme)
 ):
     """
     Create new access token using refresh token.
     """
-    # Verify this is a refresh token
-    if token.get("type") != "refresh":
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Invalid token type"
-        )
+    # Verify refresh token
+    payload = jwt_auth.verify_token(token, "refresh")
     
-    # Create new tokens
-    user_id = int(token.get("sub"))
-    access_token, refresh_token = await jwt_auth.create_tokens(user_id)
+    # Create new access token
+    access_token = jwt_auth.create_access_token(data={"sub": payload["sub"]})
     
-    return Token(
-        access_token=access_token,
-        refresh_token=refresh_token
-    )
+    return {
+        "access_token": access_token,
+        "refresh_token": None,  # Don't refresh the refresh token
+        "token_type": "bearer"
+    }
 
 @router.get("/me", response_model=UserResponse)
 async def get_user_info(
@@ -119,13 +125,12 @@ async def get_user_info(
     """
     Get current user information.
     """
-    user_id = int(current_user.get("sub"))
     query = await db.execute(
-        User.__table__.select().where(User.id == user_id)
+        User.__table__.select().where(User.email == current_user["sub"])
     )
     user = query.first()
     
-    if user is None:
+    if not user:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="User not found"

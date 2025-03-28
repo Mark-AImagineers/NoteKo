@@ -42,7 +42,32 @@ The big picture: to create a digital companion that grows with me — something 
 
 ## 📌 Changelog
 
-### Version 0.1.0 (2025-03-28)
+### [0.3.0] - 2025-03-28
+#### Added
+- Authentication System:
+  - JWT-based authentication with access and refresh tokens
+  - User registration and login endpoints
+  - Token refresh mechanism
+  - Password hashing with bcrypt
+  - Comprehensive test suite for auth endpoints
+- Testing Infrastructure:
+  - Test configuration with separate test schema
+  - Reusable test fixtures in conftest.py
+  - Authentication endpoint tests in test_auth.py
+
+### [0.2.0] - 2025-03-28
+#### Added
+- Metadata Manager for dynamic configuration management
+  - Centralized metadata storage in JSON format
+  - Dynamic application information retrieval
+- Enhanced startup banner
+  - ASCII art logo
+  - Real-time system status display
+  - Live database connection monitoring
+  - Dynamic middleware status checks
+  - Environment and version information
+
+### [0.1.0] - 2025-03-28
 #### Added
 - Frontend:
     - Set up React with Vite and Docker
@@ -57,16 +82,6 @@ The big picture: to create a digital companion that grows with me — something 
     - Docker Compose setup for both frontend and backend
     - Configured development environment with hot-reload
     - Set up proper CORS for frontend-backend communication
-
-### [0.2.0] - YYYY-MM-DD
-#### Planned
-- Scaffold React frontend
-- Create basic layout and routing
-
-### [0.3.0] - YYYY-MM-DD
-#### Planned
-- Setup FastAPI backend
-- Create basic API endpoints for notes
 
 ### [0.4.0] - YYYY-MM-DD
 #### Planned
@@ -87,6 +102,43 @@ The big picture: to create a digital companion that grows with me — something 
 - auth endpoints
 - jwt setup
 - security utils
+
+---
+
+## 🧪 Tests
+
+### Available Test Suites
+1. Authentication Tests (`test_auth.py`)
+   - User Registration (4 tests)
+   - User Login (3 tests)
+   - Token Management (3 tests)
+   - User Info (3 tests)
+
+### Running Tests
+```bash
+# Run all tests
+pytest
+
+# Run specific test suite
+pytest tests/test_auth.py
+
+# Run with verbose output
+pytest -v
+
+# Run specific test
+pytest tests/test_auth.py::test_login_success
+```
+
+### Planned Test Suites
+1. Notes CRUD Operations
+2. Note Categories/Tags
+3. Search Functionality
+4. User Preferences
+5. Data Export/Import
+6. MongoDB Integration
+7. API Rate Limiting
+8. File Attachments
+
 ---
 
 ## 🧠 Developer's Journal

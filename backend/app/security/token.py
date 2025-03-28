@@ -4,7 +4,8 @@ Includes token generation, validation, and refresh mechanisms.
 """
 from datetime import datetime, timedelta
 from typing import Optional, Dict
-from jose import JWTError, jwt
+import jwt
+from fastapi import HTTPException, status
 from app.core.config import settings
 
 # Token configuration
@@ -49,7 +50,7 @@ def create_refresh_token(data: Dict) -> str:
     to_encode.update({
         "exp": expire,
         "iat": datetime.utcnow(),
-        "type": "refresh"  # Token type for validation
+        "type": "refresh"
     })
     
     encoded_jwt = jwt.encode(
@@ -60,22 +61,33 @@ def create_refresh_token(data: Dict) -> str:
     
     return encoded_jwt
 
-def verify_token(token: str, token_type: Optional[str] = None) -> Optional[Dict]:
+def verify_token(token: str, token_type: Optional[str] = None) -> Dict:
     """
     Verify and decode a JWT token.
-    Returns None if token is invalid.
+    Raises HTTPException if token is invalid.
     """
     try:
-        payload = jwt.decode(
-            token,
-            settings.SECRET_KEY,
-            algorithms=[ALGORITHM]
-        )
-        
+        payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[ALGORITHM])
+
         # Verify token type if specified
         if token_type and payload.get("type") != token_type:
-            return None
-            
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Invalid token type",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
+
         return payload
-    except JWTError:
-        return None
+
+    except jwt.ExpiredSignatureError:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Token has expired",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    except (jwt.InvalidTokenError, jwt.DecodeError):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid token",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
